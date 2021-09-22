@@ -10,26 +10,6 @@ import numpy as np
 
 from operator import *
 
-
-# PrimaryBits = list(input("4 bits plox: "))
-# PrimaryBits = [0,1,0,1,0,1,0]
-
-
-# print(PrimaryBits)
-
-
-# 2^x =>x + bits +1
-
-# defining symbols used in equations
-
-# x = (symbols('x'))
-
-
-# defining equations
-# Powresult = nsolve(2**x - x - 250 - 1, x ,1,verify=False)
-
-# print(Powresult)
-
 def toBinary(String):
     BinConvert = np.array([(format(ord(char), '#010b')[2:]) for char in String])
 
@@ -42,7 +22,7 @@ def toString(binaryString):
 def binaryToDecimal(n):
     return int(n, 2)
 
-print("Hola maestro")
+
 
 
 def Hamming(Str):
@@ -53,11 +33,11 @@ def Hamming(Str):
         for b in y:
             set.append(b)
     fullarr = np.array(set)
-    print(fullarr)
+
     newarr = np.array_split(fullarr, len(Bin))
 
-    for c in range(len(Bin)):
-        print(newarr[c])
+
+
 
     for c in range(len(Bin)):
         a1 = int(newarr[c][7])
@@ -111,7 +91,6 @@ def Hamming(Str):
         xorP2 = d4 ^ d5 ^ d6 ^ d7 ^ d12 
         xorP3 = d8 ^ d9 ^ d10 ^ d11 ^ d12 
 
-        print("P--", P0, P1, P2, P3, "Xor--", xorP0, xorP1, xorP2, xorP3)
 
     error = np.random.randint(2)
     position = np.random.randint(12)
@@ -119,18 +98,15 @@ def Hamming(Str):
     noerrorarr = np.array(newarr[0])
 
 
-    print("error aleatorio: insertar", error, "en posicion: ", position)
 
     np.put(newarr[0], [position], [error])
 
     if newarr[0][position] != noerrorarr[position]:
-        print("eror hayado xd en: ", 12-position)
+        print("Error hallado en posicion:", 12-position)
     else:
         print("NO HAY ERROR")
 
-    print("original")
-    print(noerrorarr)
-    print(newarr[0])
+
 
     d1 = int(newarr[0][11])
     d2 = int(newarr[0][10])
@@ -151,9 +127,7 @@ def Hamming(Str):
     xorP3 = str(d8 ^ d9 ^ d10 ^ d11 ^ d12 )
 
     xor_position = xorP3+xorP2+xorP1+xorP0
-    print("valores xor(posicion error)", xorP3, xorP2, xorP1, xorP0, xor_position)
 
-    print("correccion de error")
 
 
 
@@ -166,33 +140,28 @@ def Hamming(Str):
         posicion_error_array = 0
 
 
-    print("a trabajar", newarr[0][posicion_error_array])
 
 
     if int(int_xor_position) > 0:
         if int(newarr[0][posicion_error_array]) == 0:
             np.put(newarr[0], [posicion_error_array], [1])
-            print("sustituido por 1")
         elif int(newarr[0][posicion_error_array]) == 1:
             np.put(newarr[0], [posicion_error_array], [0])
-            print("sustituido por 0")
 
-    print("corregido xd")
 
     FINALset = []
     for c in range(len(Bin)):
 
-        print(newarr[c])
+
         FINALnewarr = np.delete(newarr[c], [4,8,10,11])
-        print(FINALnewarr)    
+ 
         FINALset.append(FINALnewarr)
         FINALfullarr = np.array(FINALset).reshape(-1)
         ascii_final = "".join(FINALfullarr)
 
-    print(ascii_final) 
+
 
     
 
     return toString(ascii_final)
     
-print("MENSAJE FINAL CORREGIDO :",Hamming("Buenas Tardes"))
