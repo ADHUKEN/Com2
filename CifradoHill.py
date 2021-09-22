@@ -1,127 +1,65 @@
 import math
 import numpy as np
-print("Hola Amigos")
 
-toEncode = str(input("Frase a encriptar: "))
-#toEncode = "help"
-toEncode = toEncode.upper().strip().replace(" ", "")
-
-print(toEncode)
-
-
-FullVector = []
 alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-for x in toEncode:
-    des = alphabet.find(x.upper())  # Encuentra la posicion de alphabet
-    print(x, des)
-    FullVector.append(des)
-arr = np.array(FullVector)
-print(FullVector)
-
 NoLetras = 26
 
-completmatrix = np.array([NoLetras])
-# imprimir el vector
+def LettersToMatrix(str):
+    str = str.upper().strip().replace(" ", "")
 
+    FullVector = []
+    for x in str:
+        des = alphabet.find(x.upper())  # Encuentra la posicion de alphabet
+        FullVector.append(des)
+    arr = np.array(FullVector)
 
-length = int(len(arr)/2)
-print(len(arr))
+    global length
+    length = int(len(arr)/2)
 #
-#
-if len(arr)/2 > length:  # añade una letra si no es par
-    print("se pasa")
-    length = length + 1
-    newarray = np.hstack((arr, completmatrix))
-    arr = newarray.reshape(length, 2)
-else:
-    arr = arr.reshape(length, 2)
+    if len(arr)/2 > length:  # añade una letra si no es par
+        length = length + 1
+        newarray = np.insert(arr, length+1, 0)
+        arr = newarray.reshape(length, 2).transpose()
+    else:
+        arr = arr.reshape(length, 2).transpose()
 
+    return arr
 
-arrFinal = arr.transpose()
-print(arr)
-print(arrFinal)
+def MatrixtoLetters(Matrix):
+    LettersVector = []
+    for q in Matrix:  # se opera para numero menor de NoLetras
+        q = q % NoLetras
+        letterpositions = alphabet[int(q)]
+        LettersVector.append(letterpositions)
+        LettersStr = "".join(LettersVector)
+    return LettersStr
 
+# Encriptacion----------------------------------
 
-MatrixBase = np.array([[17, 22], [9, 13]])  # matriz llave
-
-
-print("Matriz llave\n", MatrixBase, "\n")
-
-
-result = np.matmul(MatrixBase, arrFinal)  # multiplicaion de matrices
-print("Matriz multiplicada\n", result)
-
-result = result.transpose()
-EncryptVector = result.reshape(-1)
-
-print(EncryptVector)
-
-Encrypted = []
-EncryptedVectormod = []
-
-
-for q in EncryptVector:  # se opera para numero menor de NoLetras
-    q = q % NoLetras
-    letterposition = alphabet[q]
-    Encrypted.append(letterposition)
-    EncryptedVectormod.append(q)
-    print(q, letterposition)
-
-print(Encrypted)
-print(EncryptedVectormod)
-
-EncryptedMatrix = np.array(EncryptedVectormod).reshape(length, 2).transpose()
-
-
-# Encriptacion Completa variable a exportar
-EncryptedStr = "".join(map(str, Encrypted))
-
-print(EncryptedStr)
+def Encrypt(str,KeyMatrix):
+    EncryptedMatrix = np.matmul(KeyMatrix, LettersToMatrix(str)).transpose(
+    ).reshape(-1) % NoLetras  # multiplicaion de matrices
+    return MatrixtoLetters(EncryptedMatrix)
 
 
 # Desencriptacion----------------------------------
-print("desencriptacion--------------")
+
 
 def modInverse(a, m):
     for x in range(1, m):
         if (((a % m) * (x % m)) % m == 1):
             return int(x)
 
-detmod26 = int(np.linalg.det(MatrixBase)) % NoLetras
+def DesEncrypt (str,KeyMatrix):
 
-print(detmod26)
+  EncryptedMatrix =LettersToMatrix(str)
 
+  detmod26 = int(np.linalg.det(KeyMatrix)) % NoLetras
 
-print(modInverse(int(detmod26), NoLetras))
+  KeyMatrixTrans = (modInverse(int(detmod26), NoLetras) *
+                     (np.linalg.inv(KeyMatrix).T * np.linalg.det(KeyMatrix)).transpose())
 
+  DesEcryptedMatrix = np.matmul(KeyMatrixTrans %
+                                NoLetras, EncryptedMatrix).transpose().reshape(-1) % NoLetras
+  return MatrixtoLetters(DesEcryptedMatrix)
 
-MatrixBaseTrans = (modInverse(int(detmod26), NoLetras) *
-                   (np.linalg.inv(MatrixBase).T * np.linalg.det(MatrixBase)).transpose())
-
-print(MatrixBaseTrans)
-
-print("mod26")
-
-
-print(MatrixBaseTrans % NoLetras)
-
-print(EncryptedMatrix)
-
-DesEcryptedMatrix = np.matmul(MatrixBaseTrans %
-                              NoLetras, EncryptedMatrix).transpose().reshape(-1)
-
-
-print(DesEcryptedMatrix)
-
-
-DesEncrypted = []
-
-for q in DesEcryptedMatrix:  # se opera para numero menor de NoLetras
-    q = q % NoLetras
-    letterpositionDes = alphabet[int(q)]
-    DesEncrypted.append(letterpositionDes)
-    print(int(q), letterpositionDes)
-
-DesEncryptedStr = "".join(map(str, DesEncrypted))
-
-print(DesEncryptedStr)
